@@ -5,15 +5,15 @@ module Domain
 
     VAT_RATE = 0.175  # TODO: lookup
     
-    def initialize(guid, name)
-      super()
+    def initialize
+      super
       register_events
-
-      apply(Events::CompanyCreatedEvent.new(guid, name))
     end
 
     def self.create(name)
-      Company.new(UUID.new, name)
+      company = Company.new
+      company.send(:apply, Events::CompanyCreatedEvent.new(Rcqrs::Guid.create, name))
+      company
     end
   
     def create_invoice(number, date, description, amount)
