@@ -11,9 +11,10 @@ module Domain
     end
 
     def self.create(name)
-      company = Company.new
-      company.send(:apply, Events::CompanyCreatedEvent.new(Rcqrs::Guid.create, name))
-      company
+      returning Company.new do |company|
+        event = Events::CompanyCreatedEvent.new(:guid => Rcqrs::Guid.create, :name => name)
+        company.send(:apply, event)
+      end
     end
   
     def create_invoice(number, date, description, amount)
@@ -29,7 +30,7 @@ module Domain
     end
     
     def on_invoice_created(event)
-      @invoices << Invoice.new(event.number, event.date, event.description, event.gross, event.vat)
+      @invoices << Invoice.new(event.attributes)
     end
     
     def register_events
