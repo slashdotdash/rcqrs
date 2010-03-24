@@ -22,7 +22,7 @@ module Rcqrs
 
       define_method :initialize_behavior, &block if block_given?  
       
-      # get all attributes definied in the initializer as a hash      
+      # Get all attributes defined in the initializer as a hash      
       define_method :attributes do
         (initializer_attributes || []).inject({}) do |attrs, attribute|
           attrs.merge!(attribute.to_sym => instance_variable_get("@#{attribute}"))

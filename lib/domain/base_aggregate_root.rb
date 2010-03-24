@@ -31,7 +31,7 @@ module Domain
       @applied_events << event
     end
     
-    # Register events that this class wants to be notified of
+    # Register events that this class wants to be notified of.
     # Convention over configuration is used:-
     #   Events::CompanyCreatedEvent maps to method on_company_created
     def self.register_events(*events)
