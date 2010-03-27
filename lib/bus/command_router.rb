@@ -4,7 +4,7 @@ module Bus
     
     # Register a handler for a given command    
     def register(command, handler)
-      handlers.merge!({k(command) => [k(handler)]})
+      (handlers[k(command)] ||= []) << k(handler)
     end
     
     def handler?(command, handler)

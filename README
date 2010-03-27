@@ -1,4 +1,8 @@
 
+couchdb
+redis
+github queue library
+
   UI
   - display query results
   - create command

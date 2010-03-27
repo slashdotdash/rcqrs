@@ -2,6 +2,7 @@ require 'eventful'
 require 'uuidtools'
 require 'active_support'
 require 'validatable'
+require 'yajl'
 
 require 'support/guid'
 require 'support/serialization'

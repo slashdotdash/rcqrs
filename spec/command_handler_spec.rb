@@ -9,7 +9,7 @@ module Commands
           @router = Bus::CommandRouter.instance
         end
     
-        it "should be a handler for Commands::CreateCompanyCommand" do
+        it "should be a handler for CreateCompanyCommand" do
           @handler.should be_a_handler(Commands::CreateCompanyCommand)
         end
         

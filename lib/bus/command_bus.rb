@@ -8,8 +8,10 @@ module Bus
 
     # Dispatch command to registered handlers
     def dispatch(command)
-      @router.handlers_for(command).each do |handler|
-        handler.execute(command)
+      raise Commands::InvalidCommand unless command.valid?
+      
+      router.handlers_for(command).each do |handler|
+        handler.new.execute(command)
       end
     end
   end

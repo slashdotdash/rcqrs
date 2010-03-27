@@ -4,7 +4,7 @@ module Commands
       handle Commands::CreateCompanyCommand
       
       def execute(event)
-        Company.create(event.name)
+        Domain::Company.create(event.name)
       end
     end
   end
