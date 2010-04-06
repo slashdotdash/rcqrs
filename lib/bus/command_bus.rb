@@ -1,18 +1,15 @@
 module Bus
   class CommandBus
-    attr_reader :router
-    
-    def initialize
-      @router = CommandRouter.instance
-    end    
+    def initialize(router=CommandRouter.new)
+      @router = router
+    end
 
     # Dispatch command to registered handlers
     def dispatch(command)
       raise Commands::InvalidCommand unless command.valid?
       
-      router.handlers_for(command).each do |handler|
-        handler.new.execute(command)
-      end
+      handler = @router.handler_for(command)
+      handler.execute(command)
     end
   end
 end

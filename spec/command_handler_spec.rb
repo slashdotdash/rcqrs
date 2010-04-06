@@ -3,19 +3,18 @@ require File.join(File.dirname(__FILE__), '/../lib/cqrs')
 module Commands
   module Handlers
     describe CreateCompanyHandler do
-      context "ctr" do
+      before(:each) do
+        @handler = CreateCompanyHandler.new
+      end
+      
+      context "when executing command" do
         before(:each) do
-          @handler = CreateCompanyHandler.new
-          @router = Bus::CommandRouter.instance
-        end
-    
-        it "should be a handler for CreateCompanyCommand" do
-          @handler.should be_a_handler(Commands::CreateCompanyCommand)
+          @command = Commands::CreateCompanyCommand.new(:name => 'ACME corp')
+          @company = @handler.execute(@command)
         end
         
-        it "should be registered with the command router" do
-          @router.handlers_for(Commands::CreateCompanyCommand).should include(@handler.class)
-        end
+        specify { @company.should be_instance_of(Domain::Company) }
+        specify { @company.name.should == @command.name }
       end
     end
   end

@@ -1,10 +1,8 @@
 module Commands
   module Handlers
-    class CreateCompanyHandler < BaseHandler
-      handle Commands::CreateCompanyCommand
-      
-      def execute(event)
-        Domain::Company.create(event.name)
+    class CreateCompanyHandler
+      def execute(command)
+        Domain::Company.create(command.name)
       end
     end
   end
