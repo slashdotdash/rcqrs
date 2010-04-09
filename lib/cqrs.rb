@@ -8,8 +8,13 @@ require 'support/guid'
 require 'support/serialization'
 require 'support/initializer'
 
+require 'event_store/domain_event_storage'
+require 'event_store/domain_repository'
+require 'event_store/adapters/active_record_adapter'
+
 require 'bus/command_router'
 require 'bus/command_bus'
+require 'bus/event_router'
 
 require 'commands/base_command'
 require 'commands/handlers/base_command_handler'

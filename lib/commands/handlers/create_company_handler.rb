@@ -1,8 +1,10 @@
 module Commands
   module Handlers
-    class CreateCompanyHandler
+    class CreateCompanyHandler < BaseCommandHandler
       def execute(command)
-        Domain::Company.create(command.name)
+        returning Domain::Company.create(command.name) do |company|
+          @repository.save(company)
+        end
       end
     end
   end

@@ -4,11 +4,14 @@ module Commands
   module Handlers
     describe CreateCompanyHandler do
       before(:each) do
-        @handler = CreateCompanyHandler.new
+        @repository = mock
+        @handler = CreateCompanyHandler.new(@repository)
       end
       
       context "when executing command" do
         before(:each) do
+          @repository.should_receive(:save)
+          
           @command = Commands::CreateCompanyCommand.new(:name => 'ACME corp')
           @company = @handler.execute(@command)
         end

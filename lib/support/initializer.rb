@@ -7,13 +7,12 @@ module Rcqrs
 
       define_method :initialize do |*ctor_args|
         ctor_named_args = (ctor_args.last.is_a?(Hash) ? ctor_args.pop : {})
-        (0..args.size).each do |index|
-          instance_variable_set("@#{args[index]}", ctor_args[index])
+        args.each_with_index do |arg, index|
+          instance_variable_set("@#{arg}", ctor_args[index])
         end
 
         ctor_named_args.each_pair do |param_name, param_value|
           raise(ArgumentError, "Unknown method #{param_name}, add it to the record attributes") unless respond_to?(:"#{param_name}")
-          
           instance_variable_set("@#{param_name}", param_value)
         end
         
@@ -27,6 +26,10 @@ module Rcqrs
         (initializer_attributes || []).inject({}) do |attrs, attribute|
           attrs.merge!(attribute.to_sym => instance_variable_get("@#{attribute}"))
         end
+      end
+      
+      define_method :attributes_to_json do
+        to_json(attributes)
       end
     end
   end

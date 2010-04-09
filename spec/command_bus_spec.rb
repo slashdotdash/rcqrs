@@ -3,7 +3,7 @@ require File.join(File.dirname(__FILE__), '/../lib/cqrs')
 class MockRouter
   attr_reader :handled
   
-  def handler_for(command)
+  def handler_for(command, repository)
     self
   end
   
