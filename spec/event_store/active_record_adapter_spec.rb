@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), '/../../lib/cqrs')
+require File.join(File.dirname(__FILE__), '/../spec_helper')
 
 module EventStore
   module Adapters

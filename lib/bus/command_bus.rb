@@ -1,8 +1,7 @@
 module Bus
   class CommandBus
-    def initialize(router=CommandRouter.new, repository=[])
-      @router = router
-      @repository = repository
+    def initialize(router, repository)
+      @router, @repository = router, repository
     end
 
     # Dispatch command to registered handler

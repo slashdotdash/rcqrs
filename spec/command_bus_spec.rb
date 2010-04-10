@@ -1,23 +1,12 @@
-require File.join(File.dirname(__FILE__), '/../lib/cqrs')
-
-class MockRouter
-  attr_reader :handled
-  
-  def handler_for(command, repository)
-    self
-  end
-  
-  def execute(command)
-    @handled = true
-  end
-end
+require File.join(File.dirname(__FILE__), 'spec_helper')
 
 module Bus  
   describe CommandBus do
     context "when dispatching commands" do
       before(:each) do
         @router = MockRouter.new
-        @bus = CommandBus.new(@router)
+        @repository = mock
+        @bus = CommandBus.new(@router, @repository)
       end
 
       it "should raise an InvalidCommand exception when the command is invalid" do

@@ -1,20 +1,21 @@
-redis
-github queue library
+= Ruby CQRS with Event Sourcing
 
-def subclasses_of(superclass) 
-	subclasses = [] 
-	ObjectSpace.each_object(Class) do |k| 
-		next if !k.ancestors.include?(superclass) || superclass == k || 
-		k.to_s.include?('::') || subclasses.include?(k.to_s) 
-		subclasses << k.to_s 
-	end 
-	subclasses 
-end 
+== Getting Started
 
+Dependencies are managed using Bundler (http://gembundler.com/)
+
+$ sudo gem install bundler
+
+Install all of the required gems for this application
+
+$ sudo bundle install
+
+
+== Basic Design Overview
 
   UI
   - display query results
-  - create command
+  - create commands
   - basic validation of command (e.g. required fields, uniqueness using queries)
 
   command					CreateCompanyCommand
