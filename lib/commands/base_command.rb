@@ -3,6 +3,7 @@ module Commands
   
   class BaseCommand
     extend Rcqrs::Initializer
-    include Validatable
+    # include Validatable
+    include ActiveModel::Validations
   end
 end

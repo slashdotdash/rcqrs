@@ -10,10 +10,9 @@ module Commands
       
       context "when executing command" do
         before(:each) do
-          @repository.should_receive(:save)
-          
+          @repository.should_receive(:save) {|company| @company = company }
           @command = Commands::CreateCompanyCommand.new(:name => 'ACME corp')
-          @company = @handler.execute(@command)
+          @handler.execute(@command)
         end
         
         specify { @company.should be_instance_of(Domain::Company) }

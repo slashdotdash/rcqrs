@@ -9,7 +9,7 @@ module Domain
       return if events.length == 0
 
       events.sort_by {|e| e.version }.each do |event|
-        apply(event, true)
+        apply(event)
       end
     end
 
@@ -20,13 +20,13 @@ module Domain
       @applied_events = []
     end
 
-    def apply(event, loading=false)
+    def apply(event)
       fire(event.class, event)
-      
-      @version += 1      
-      update_event(event) unless loading
-      
+
+      @version += 1
       @applied_events << event
+      
+      update_event(event) if event.aggregate_id.blank?
     end
     
     def update_event(event)

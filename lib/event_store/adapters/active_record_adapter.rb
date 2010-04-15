@@ -3,7 +3,7 @@ require 'active_record'
 module EventStore
   module Adapters
     class Event < ActiveRecord::Base
-      named_scope :for_aggregate, lambda { |guid|
+      scope :for_aggregate, lambda { |guid|
         { :conditions => { :aggregate_id => guid }, :order => :version }}
     end
 

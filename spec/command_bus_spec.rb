@@ -12,7 +12,7 @@ module Bus
       it "should raise an InvalidCommand exception when the command is invalid" do
         command = Commands::CreateCompanyCommand.new
         proc { @bus.dispatch(command) }.should raise_error(Commands::InvalidCommand)
-        command.errors.on(:name).should == "can't be empty"
+        command.errors[:name].should == ["can't be blank"]
       end
 
       it "should execute handler for given command" do

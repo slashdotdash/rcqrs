@@ -15,7 +15,7 @@ module Bus
   protected
   
     def handler_class_for(target)
-      raise Exception 'abstract method called'
+      raise 'abstract method called'
     end
     
     def handler_class_for(target)
