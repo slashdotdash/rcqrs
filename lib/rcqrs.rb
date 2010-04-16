@@ -2,7 +2,6 @@ require 'eventful'
 require 'uuidtools'
 require 'active_support'
 require 'active_support/core_ext/object/returning'
-# require 'validatable'
 require 'yajl'
 
 require 'support/guid'

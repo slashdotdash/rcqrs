@@ -4,7 +4,6 @@ gem "activesupport", ">= 3.0.beta3"
 gem "activerecord", ">= 3.0.beta3"
 gem "eventful"
 gem "uuidtools"
-# gem "validatable"
 gem "yajl-ruby"
 
 group :spec do

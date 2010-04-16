@@ -1,25 +1,29 @@
 require File.join(File.dirname(__FILE__), 'spec_helper')
 
 module EventStore
-  class MockStorage
+  class MockEventStore
     attr_reader :saved_events
     
     def initialize
       @saved_events = []
     end
     
-    def save(events)
-      @saved_events += events
+    def save(aggregate)
+      @klass = aggregate.class.name
+      @saved_events += aggregate.applied_events
     end
     
     def find(guid)
-      @saved_events.select {|event| event.aggregate_id == guid }
+      raise EventStore::AggregateNotFound if @saved_events.empty?
+      
+      events = @saved_events.select {|event| event.aggregate_id == guid }
+      [@klass, events]
     end
   end
   
   describe DomainRepository do
     before(:each) do
-      @storage = MockStorage.new
+      @storage = MockEventStore.new
       @repository = DomainRepository.new(@storage)
       @aggregate = Domain::Company.create('ACME Corp.')
     end
@@ -38,12 +42,6 @@ module EventStore
           event.aggregate_id.should == @aggregate.guid
         end
       end
-
-      it "should set the aggregate id for each event" do
-        @storage.saved_events.each do |event| 
-          event.aggregate_class.should == 'Domain::Company'
-        end
-      end
     end
     
     context "when finding an aggregate that does not exist" do
@@ -54,7 +52,7 @@ module EventStore
     
     context "when loading an aggregate" do
       before(:each) do
-        @storage.save(@aggregate.applied_events)
+        @storage.save(@aggregate)
         @retrieved = @repository.find(@aggregate.guid)
       end
       

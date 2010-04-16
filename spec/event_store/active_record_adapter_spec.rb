@@ -11,8 +11,13 @@ module EventStore
 
       context "when saving events" do
         before(:each) do
-          @adapter.save(@aggregate.applied_events)
-          @events = @adapter.find(@aggregate.guid)
+          @adapter.save(@aggregate)
+          @klass, @events = @adapter.find(@aggregate.guid)
+        end
+
+        it "should persist a single event provider (aggregate)" do
+          count = @adapter.connection.select_value('select count(*) from event_providers').to_i
+          count.should == 1
         end
 
         it "should persist a single event" do
@@ -22,8 +27,14 @@ module EventStore
 
         specify { @events.count.should == 1 }
         specify { @events.first.aggregate_id.should == @aggregate.guid }
-        specify { @events.first.aggregate_class.should == 'Domain::Company' }
+        specify { @klass.should == 'Domain::Company' }
         specify { @events.first.version.should == 1 }
+      end
+      
+      context "when finding events" do
+        it "should raise AggregateNotFound exception when not found" do
+          proc { @adapter.find('') }.should raise_error(EventStore::AggregateNotFound) 
+        end
       end
     end
   end

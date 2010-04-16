@@ -15,10 +15,6 @@ module Bus
   protected
   
     def handler_class_for(target)
-      raise 'abstract method called'
-    end
-    
-    def handler_class_for(target)
       handler_name = "#{target.class.name.gsub(/^Events::|Event$|^Commands::|Command$/, '')}Handler"
       raise MissingHandler unless @available_handlers.const_defined?(handler_name)
       

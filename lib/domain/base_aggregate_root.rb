@@ -31,7 +31,6 @@ module Domain
     
     def update_event(event)
       event.aggregate_id = @guid
-      event.aggregate_class = self.class.name
       event.version = @version
     end
     
