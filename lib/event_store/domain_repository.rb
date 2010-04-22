@@ -11,6 +11,7 @@ module EventStore
     # Persist the +aggregate+ to the event store
     def save(aggregate)
       @event_store.save(aggregate)
+      aggregate.sync_versions
     end
     
     # Find an aggregate by the given +guid+

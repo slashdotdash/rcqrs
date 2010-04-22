@@ -1,11 +1,12 @@
-require File.join(File.dirname(__FILE__), 'spec_helper')
+require File.join(File.dirname(__FILE__), '../spec_helper')
 
 module Domain
   describe Company do
     context "when creating" do
       before(:each) do
-        @event_raised = false
+        @event_raised = @domain_event_raised = false
         Company.on(Events::CompanyCreatedEvent) {|source, event| @event_raised = true }
+        Company.on(:domain_event) {|source, event| @domain_event_raised = true }
         
         @company = Company.create('ACME Corp')
       end
@@ -18,10 +19,18 @@ module Domain
         @event_raised.should == true
       end
       
+      it "should raise a domain event" do
+        @domain_event_raised.should == true
+      end
+      
       it "should have a Events::CompanyCreatedEvent event" do
         @company.applied_events.length.should == 1
         @company.applied_events.last.should be_an_instance_of(Events::CompanyCreatedEvent)
       end
+      
+      specify { @company.version.should == 1 }
+      specify { @company.source_version.should == 0 }
+      specify { @company.pending_events.length.should == 1 }
       
       context "when adding an invoice" do
         before(:each) do
@@ -41,21 +50,38 @@ module Domain
     
     context "when loading from events" do
       before(:each) do
-        @company_created = Events::CompanyCreatedEvent.new(Rcqrs::Guid.create, 'ACME Corp')
-        @first_invoice_created = Events::InvoiceCreatedEvent.new('1', Time.now, '', 100, 17.5)
-        @second_invoice_created = Events::InvoiceCreatedEvent.new('2', Time.now, '', 50, 17.5/2)
+        events = [ 
+          Events::CompanyCreatedEvent.new(Rcqrs::Guid.create, 'ACME Corp'), 
+          Events::InvoiceCreatedEvent.new('1', Time.now, '', 100, 17.5), 
+          Events::InvoiceCreatedEvent.new('2', Time.now, '', 50, 17.5/2)
+        ]
+        events.each_with_index {|e, i| e.version = i + 1 }
         
-        @events = [ @company_created, @first_invoice_created, @second_invoice_created ]
-        @events.each_with_index {|e, i| e.version = i + 1 }
-        
+        @event_raised = @domain_event_raised = false
+        Company.on(Events::CompanyCreatedEvent) {|source, event| @event_raised = true }
+        Company.on(:domain_event) {|source, event| @domain_event_raised = true }
+                
         @company = Company.new
-        @company.load(@events)
+        @company.load(events)
       end
       
+      specify { @company.version.should == 3 }
+      specify { @company.source_version.should == 3 }
+      specify { @company.pending_events.length.should == 1 }
+      specify { @company.replaying?.should == false }
+      
+      it "should raise the company_created event" do
+        @event_raised.should == true
+      end
+
+      it "should not raise a domain event" do
+        @domain_event_raised.should == false
+      end
+            
       it "should have 3 applied events" do
         @company.applied_events.length.should == 3
       end
-      
+
       it "should have created 2 invoices" do
         @company.invoices.length.should == 2
       end

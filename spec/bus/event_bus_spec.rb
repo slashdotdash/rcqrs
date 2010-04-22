@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), 'spec_helper')
+require File.join(File.dirname(__FILE__), '../spec_helper')
 
 module Bus  
   describe EventBus do
@@ -10,7 +10,7 @@ module Bus
       end
 
       it "should execute handler for raised event" do
-        Domain::Company.create('ACME Corp')
+        Bus::CommandBus.fire(:domain_event, Events::CompanyCreatedEvent.new)
         @router.handled.should == true
       end
     end

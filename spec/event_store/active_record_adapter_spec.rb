@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), '/../spec_helper')
+require File.join(File.dirname(__FILE__), '../spec_helper')
 
 module EventStore
   module Adapters
@@ -16,12 +16,12 @@ module EventStore
         end
 
         it "should persist a single event provider (aggregate)" do
-          count = @adapter.connection.select_value('select count(*) from event_providers').to_i
+          count = @adapter.provider_connection.select_value('select count(*) from event_providers').to_i
           count.should == 1
         end
 
         it "should persist a single event" do
-          count = @adapter.connection.select_value('select count(*) from events').to_i
+          count = @adapter.event_connection.select_value('select count(*) from events').to_i
           count.should == 1
         end
 
@@ -29,6 +29,16 @@ module EventStore
         specify { @events.first.aggregate_id.should == @aggregate.guid }
         specify { @klass.should == 'Domain::Company' }
         specify { @events.first.version.should == 1 }
+      end
+      
+      context "when saving incorrect aggregate version" do
+        before(:each) do
+          @adapter.save(@aggregate)
+        end
+        
+        it "should raise AggregateConcurrencyError exception" do
+          proc { @adapter.save(@aggregate) }.should raise_error(AggregateConcurrencyError)
+        end
       end
       
       context "when finding events" do

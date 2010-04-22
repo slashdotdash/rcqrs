@@ -1,12 +1,11 @@
-require File.join(File.dirname(__FILE__), 'spec_helper')
+require File.join(File.dirname(__FILE__), '../spec_helper')
 
 module Bus  
   describe CommandBus do
     context "when dispatching commands" do
       before(:each) do
         @router = MockRouter.new
-        @repository = mock
-        @bus = CommandBus.new(@router, @repository)
+        @bus = CommandBus.new(@router, nil)
       end
 
       it "should raise an InvalidCommand exception when the command is invalid" do
@@ -17,8 +16,13 @@ module Bus
 
       it "should execute handler for given command" do
         @bus.dispatch(Commands::CreateCompanyCommand.new('foo'))
-        @router.handled.should == true        
+        @router.handled.should == true
       end
-    end
+      
+      it "should fire domain events after executing handler" do
+        @bus.on(:domain_event) {|source, event| @router.handled.should == true }
+        @bus.dispatch(Commands::CreateCompanyCommand.new('foo'))
+      end      
+    end    
   end
 end

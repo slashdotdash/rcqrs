@@ -29,25 +29,32 @@ module EventStore
 
       def save(aggregate)
         EventProvider.transaction do
-          provider = find_or_create_provider(aggregate)
-          # raise AggregateConcurrencyError unless aggregate.version == provider.version
+          provider = find_or_create_provider(aggregate)          
 
-          save_events(aggregate.applied_events)
+          save_events(aggregate.pending_events)
           
           provider.update_attribute(:version, aggregate.version)
         end
       end
       
-      def connection
-        ActiveRecord::Base.connection
+      def provider_connection
+        EventProvider.connection
+      end
+      
+      def event_connection
+        Event.connection
       end
 
     private
       
       def find_or_create_provider(aggregate)
-        EventProvider.find(aggregate.guid) || create_provider(aggregate)
+        if provider = EventProvider.find(aggregate.guid)
+          raise AggregateConcurrencyError unless provider.version == aggregate.source_version
+        else
+          create_provider(aggregate)
+        end
       end
-      
+
       def create_provider(aggregate)
         EventProvider.create!(
           :aggregate_id => aggregate.guid,
@@ -56,18 +63,18 @@ module EventStore
       end
 
       def save_events(events)
-        Event.transaction do
-          events.each do |event|
-            Event.create!(
-              :aggregate_id => event.aggregate_id,
-              :version => event.version,
-              :data => event.attributes_to_json)
-          end
+        events.each do |event|
+          Event.create!(
+            :aggregate_id => event.aggregate_id,
+            :version => event.version,
+            :data => event.attributes_to_json)
         end
       end
       
+      # Connect to a different database for event storage models
       def establish_connection(options)
-        ActiveRecord::Base.establish_connection(options)
+        EventProvider.establish_connection(options)
+        Event.establish_connection(options)
       end
 
       def ensure_tables_exist
@@ -78,28 +85,28 @@ module EventStore
       def ensure_event_providers_table_exists
         return if EventProvider.table_exists?
         
-        connection.create_table(:event_providers, :primary_key => false) do |t|
-          t.column :aggregate_id, :string, :null => false
-          t.column :aggregate_type, :string, :null => false
-          t.column :version, :integer, :null => false
-          t.column :created_at, :timestamp, :null => false
+        provider_connection.create_table(:event_providers) do |t|
+          t.string :aggregate_id, :limit => 36, :primary => true
+          t.string :aggregate_type, :null => false
+          t.integer :version, :null => false
+          t.timestamps
         end
 
-        connection.add_index :event_providers, :aggregate_id, :unique => true
+        provider_connection.add_index :event_providers, :aggregate_id, :unique => true
       end
       
       def ensure_events_table_exists
         return if Event.table_exists?
         
-        connection.create_table(:events, :primary_key => false) do |t|
-          t.column :aggregate_id, :string, :null => false
-          t.column :version, :integer, :null => false
-          t.column :data, :blob, :null => false
-          t.column :created_at, :timestamp, :null => false
+        event_connection.create_table(:events, :id => false) do |t|
+          t.string :aggregate_id, :limit => 36, :null => false
+          t.integer :version, :null => false
+          t.text :data, :null => false
+          t.timestamp :created_at, :null => false
         end
         
-        connection.add_index :events, :aggregate_id
-        connection.add_index :events, [:aggregate_id, :version]
+        event_connection.add_index :events, :aggregate_id
+        event_connection.add_index :events, [:aggregate_id, :version]
       end
     end
   end
