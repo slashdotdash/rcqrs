@@ -21,7 +21,7 @@ module Bus
     # Capture all raised domain events and replay after block has executed
     def capture_and_raise_events(&block)
       events = []
-      Domain::BaseAggregateRoot.on(:domain_event) {|source, event| events << event }
+      Eventful.on(:domain_event) {|source, event| events << event unless source == self }
       yield
       events.each {|event| fire(:domain_event, event) }
     end

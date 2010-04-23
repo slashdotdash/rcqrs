@@ -7,7 +7,7 @@ module Bus
 
   private
     
-    # Subscribe to all events raised by any aggregate root
+    # Subscribe to all events triggered by command handlers
     def wire_events
       Bus::CommandBus.on(:domain_event) {|source, event| dispatch(event) }
     end

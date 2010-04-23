@@ -23,4 +23,4 @@ require 'commands/handlers/base_command_handler'
 require 'events/domain_event'
 require 'events/handlers/base_handler'
 
-require 'domain/base_aggregate_root'
+require 'domain/aggregate_root'

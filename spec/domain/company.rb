@@ -1,5 +1,7 @@
 module Domain
-  class Company < BaseAggregateRoot
+  class Company
+    extend AggregateRoot
+    
     attr_reader :name
     attr_reader :invoices
     
