@@ -1,6 +1,6 @@
 module Commands
   module Handlers
-    class BaseCommandHandler
+    class BaseHandler
       def initialize(repository)
         @repository = repository
       end

@@ -21,8 +21,16 @@ module Bus
     # Capture all raised domain events and replay after block has executed
     def capture_and_raise_events(&block)
       events = []
-      Eventful.on(:domain_event) {|source, event| events << event unless source == self }
-      yield
+      observer = Eventful.on(:domain_event) {|source, event| events << event }
+      begin
+        yield
+      ensure
+        Eventful.delete_observer(observer)
+      end
+      replay(events)
+    end
+    
+    def replay(events)
       events.each {|event| fire(:domain_event, event) }
     end
   end

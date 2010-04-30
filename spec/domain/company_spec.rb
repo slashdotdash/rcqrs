@@ -67,7 +67,8 @@ module Domain
       
       specify { @company.version.should == 3 }
       specify { @company.source_version.should == 3 }
-      specify { @company.pending_events.length.should == 1 }
+      specify { @company.pending_events.length.should == 0 }
+      specify { @company.applied_events.length.should == 3 }      
       specify { @company.replaying?.should == false }
       
       it "should raise the company_created event" do

@@ -11,6 +11,7 @@ require 'support/initializer'
 require 'event_store/domain_event_storage'
 require 'event_store/domain_repository'
 require 'event_store/adapters/active_record_adapter'
+require 'event_store/adapters/in_memory_adapter'
 
 require 'bus/router'
 require 'bus/command_bus'
@@ -18,7 +19,7 @@ require 'bus/event_bus'
 
 require 'commands/base_command'
 require 'commands/active_model'
-require 'commands/handlers/base_command_handler'
+require 'commands/handlers/base_handler'
 
 require 'events/domain_event'
 require 'events/handlers/base_handler'

@@ -6,7 +6,13 @@ module Domain
         include InstanceMethods
       end
     end
-
+    
+    def create_from_event(event)
+      returning self.new do |aggregate|
+        aggregate.send(:apply, event)
+      end
+    end
+    
     # Register events that this class wants to be notified of
     def register_events(*events)
       events.each do |event_type|
@@ -29,7 +35,7 @@ module Domain
       # Replay the given events, ordered by version
       def load(events)
         @replaying = true
-          
+
         events.sort_by {|e| e.version }.each do |event|
           replay(event)
         end
@@ -37,9 +43,9 @@ module Domain
         @replaying = false
       end
 
-      # Events applied since the source version
+      # Events applied since the source version (unsaved events)
       def pending_events
-        @applied_events.reject {|e| e.version < source_version }.sort_by {|e| e.version }
+        @applied_events.select {|e| e.version > @source_version }.sort_by {|e| e.version }
       end
   
       def replaying?

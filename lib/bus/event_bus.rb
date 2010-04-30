@@ -4,7 +4,7 @@ module Bus
       @router, @repository = router, repository
       wire_events
     end
-
+    
   private
     
     # Subscribe to all events triggered by command handlers

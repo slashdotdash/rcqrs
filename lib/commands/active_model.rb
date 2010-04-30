@@ -2,15 +2,15 @@ module Commands
   module ActiveModel
     def self.extended(base)
       base.class_eval do
-        include Commands::ActiveModel
-        extend ::Rcqrs::Initializer
-        
         include ::ActiveModel::Conversion
         include ::ActiveModel::AttributeMethods
         include ::ActiveModel::Validations
+        
+        extend ::Rcqrs::Initializer        
+        include Commands::ActiveModel
       end
     end
-    
+
     # Commands are never persisted
     def persisted?
       false

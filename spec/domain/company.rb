@@ -6,24 +6,15 @@ module Domain
     attr_reader :invoices
     
     register_events Events::CompanyCreatedEvent, Events::InvoiceCreatedEvent
-    
-    VAT_RATE = 0.175  # TODO: lookup
-    
+
     def self.create(name)
-      returning Company.new do |company|
-        event = Events::CompanyCreatedEvent.new(:guid => Rcqrs::Guid.create, :name => name)
-        company.send(:apply, event)
-      end
+      event = Events::CompanyCreatedEvent.new(:guid => Rcqrs::Guid.create, :name => name)
+      create_from_event(event)
     end
   
     def create_invoice(number, date, description, amount)
-      vat = amount * VAT_RATE
+      vat = amount * 0.175
       apply(Events::InvoiceCreatedEvent.new(number, date, description, amount, vat))
-    end
-
-    def create_expense(date, description, amount)
-      vat = amount * VAT_RATE
-      apply(Events::ExpenseCreatedEvent.new(date, description, amount, vat))
     end
 
   private

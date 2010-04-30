@@ -1,7 +1,6 @@
 module Events
   class InvoiceCreatedEvent < DomainEvent
-    attr_reader :number, :date, :description, :gross, :vat
-
-    initializer :number, :date, :description, :gross, :vat    
+    attr_reader :date, :number, :description, :gross, :vat
+    initializer :date, :number, :description, :gross, :vat
   end
 end

@@ -1,16 +1,21 @@
 require 'active_record'
 
-module EventStore  
+module EventStore
   module Adapters
     # Represents every aggregate created
     class EventProvider < ActiveRecord::Base
       def self.find(guid)
-        where('aggregate_id = ?', guid).first
+        return nil if guid.blank?
+        where(:aggregate_id => guid).first
+      end
+      
+      def events
+        Event.for(aggregate_id)
       end
     end
 
     class Event < ActiveRecord::Base
-      scope :for, lambda { |guid| where('aggregate_id = ?', guid).order(:version) }
+      scope :for, lambda { |guid| where(:aggregate_id => guid).order(:version) }
     end
 
     class ActiveRecordAdapter
@@ -21,22 +26,19 @@ module EventStore
       end
       
       def find(guid)
-       provider = EventProvider.find(guid)
-       raise AggregateNotFound if provider.nil?
-
-       [provider.aggregate_type, Event.for(guid)]
+       EventProvider.find(guid)
       end
 
       def save(aggregate)
-        EventProvider.transaction do
-          provider = find_or_create_provider(aggregate)          
-
-          save_events(aggregate.pending_events)
-          
-          provider.update_attribute(:version, aggregate.version)
-        end
+        provider = find_or_create_provider(aggregate)
+        save_events(aggregate.pending_events)
+        provider.update_attribute(:version, aggregate.version)
       end
       
+      def transaction(&block)
+        EventProvider.transaction { yield }
+      end
+
       def provider_connection
         EventProvider.connection
       end
@@ -51,8 +53,9 @@ module EventStore
         if provider = EventProvider.find(aggregate.guid)
           raise AggregateConcurrencyError unless provider.version == aggregate.source_version
         else
-          create_provider(aggregate)
+          provider = create_provider(aggregate)
         end
+        provider
       end
 
       def create_provider(aggregate)
@@ -66,6 +69,7 @@ module EventStore
         events.each do |event|
           Event.create!(
             :aggregate_id => event.aggregate_id,
+            :event_type => event.class.name,
             :version => event.version,
             :data => event.attributes_to_json)
         end
@@ -100,6 +104,7 @@ module EventStore
         
         event_connection.create_table(:events, :id => false) do |t|
           t.string :aggregate_id, :limit => 36, :null => false
+          t.string :event_type, :null => false
           t.integer :version, :null => false
           t.text :data, :null => false
           t.timestamp :created_at, :null => false
