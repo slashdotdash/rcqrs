@@ -38,8 +38,7 @@ module EventStore
       end
 
       def save(aggregate)
-        provider = InMemory::EventProvider.new(aggregate)
-        @storage.merge!({aggregate.guid => provider})
+        @storage[aggregate.guid] = InMemory::EventProvider.new(aggregate)
       end
       
       def transaction(&block)

@@ -31,7 +31,7 @@ module Domain
 
     module InstanceMethods
       attr_reader :guid, :applied_events, :version, :source_version
-      
+
       # Replay the given events, ordered by version
       def load(events)
         @replaying = true
@@ -51,7 +51,11 @@ module Domain
       def replaying?
         @replaying
       end
-  
+
+      def pending_events?
+        ! pending_events.empty?
+      end
+
       def sync_versions
         @source_version = @version
       end
@@ -79,7 +83,7 @@ module Domain
 
       def apply_event(event)
         fire(event.class, event)
-    
+
         @applied_events << event      
         @version += 1
       end

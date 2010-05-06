@@ -26,7 +26,7 @@ module EventStore
       end
       
       def find(guid)
-       EventProvider.find(guid)
+        EventProvider.find(guid)
       end
 
       def save(aggregate)

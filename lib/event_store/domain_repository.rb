@@ -6,15 +6,17 @@ module EventStore
   class DomainRepository
     def initialize(event_store)
       @event_store = event_store
-      @tracked_aggregates = []
+      @tracked_aggregates = {}
     end
     
     # Persist the +aggregate+ to the event store
     def save(aggregate)
-      @tracked_aggregates << aggregate
-      
+      track(aggregate)
+
       @event_store.transaction do
-        @tracked_aggregates.each do |tracked|
+        @tracked_aggregates.each do |guid, tracked|
+          next unless tracked.pending_events?
+
           @event_store.save(tracked)
           tracked.sync_versions
         end
@@ -29,6 +31,8 @@ module EventStore
     # * AggregateNotFound - No aggregate for the given +guid+ was found
     # * UnknownAggregateClass - The type of aggregate is unknown
     def find(guid)
+      return @tracked_aggregates[guid] if @tracked_aggregates.has_key?(guid)
+
       provider = @event_store.find(guid)
       raise AggregateNotFound if provider.nil?
 
@@ -37,12 +41,18 @@ module EventStore
     
   private
   
+    # Track changes to this aggregate root so that any unsaved events
+    # are persisted when save is called (for any aggregate)
+    def track(aggregate)
+      @tracked_aggregates[aggregate.guid] = aggregate
+    end
+    
     # Recreate an aggregate root by re-applying all saved +events+
     def load_aggregate(klass, events)
       returning create_aggregate(klass) do |aggregate|
         events.map! {|event| create_event(event) }
         aggregate.load(events)
-        @tracked_aggregates << aggregate
+        track(aggregate)
       end
     end
     
