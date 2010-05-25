@@ -4,6 +4,12 @@ module Rcqrs
     
     def initializer(*args, &block)
       initializer_attributes = args.dup
+      last = initializer_attributes.last
+      if last.is_a?(Hash) && last[:attr_reader] == true
+        (initializer_attributes -= [last]).each do |attr|
+          send(:attr_reader, attr)
+        end
+      end
 
       define_method :initialize do |*ctor_args|
         ctor_named_args = (ctor_args.last.is_a?(Hash) ? ctor_args.pop : {})

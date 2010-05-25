@@ -4,7 +4,7 @@ module Rcqrs
       base.extend ClassMethods
     end
     
-    def to_json(attributes=self)
+    def to_json(attributes=self.attributes)
       Yajl::Encoder.encode(attributes)
     end
 

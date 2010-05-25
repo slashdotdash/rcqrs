@@ -10,7 +10,12 @@ module Rcqrs
       @ps = bhp.to_f / 2
     end
   end
-    
+  
+  class Bike
+    extend Initializer
+    initializer :manufacturer, :attr_reader => true 
+  end
+
   describe Car do
     context "when creating with positional arguments" do
       before(:each) do
@@ -79,6 +84,16 @@ module Rcqrs
     it "should allow creation of new object from existing object's attributes" do
       cloned = Car.new(@car.attributes)
       cloned.manufacturer.should == 'Ford'
+    end
+  end
+  
+  context "when defining attrs automatically" do
+    before (:each) do
+      @bike = Bike.new('Planet X')
+    end
+    
+    it "should have attr_reader defined" do
+      @bike.manufacturer.should == 'Planet X'
     end
   end
 end
