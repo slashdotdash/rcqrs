@@ -7,20 +7,12 @@ module EventStore
     def initialize(event_store)
       @event_store = event_store
       @tracked_aggregates = {}
+      @within_transaction = false
     end
     
     # Persist the +aggregate+ to the event store
     def save(aggregate)
-      track(aggregate)
-
-      @event_store.transaction do
-        @tracked_aggregates.each do |guid, tracked|
-          next unless tracked.pending_events?
-
-          @event_store.save(tracked)
-          tracked.sync_versions
-        end
-      end
+      transaction { track(aggregate) }
     end
 
     # Find an aggregate by the given +guid+
@@ -39,12 +31,39 @@ module EventStore
       load_aggregate(provider.aggregate_type, provider.events)
     end
     
+    # Save changes to the event store within a transaction
+    def transaction(&block)
+      yield and return if within_transaction?
+      
+      @within_transaction = true
+      
+      @event_store.transaction do
+        yield
+        persist_aggregates_to_event_store
+      end
+    ensure
+      @within_transaction = false
+    end
+    
+    def within_transaction?
+      @within_transaction
+    end
+    
   private
   
     # Track changes to this aggregate root so that any unsaved events
     # are persisted when save is called (for any aggregate)
     def track(aggregate)
       @tracked_aggregates[aggregate.guid] = aggregate
+    end
+    
+    def persist_aggregates_to_event_store
+      @tracked_aggregates.each do |guid, tracked|
+        next unless tracked.pending_events?
+
+        @event_store.save(tracked)
+        tracked.sync_versions
+      end
     end
     
     # Recreate an aggregate root by re-applying all saved +events+

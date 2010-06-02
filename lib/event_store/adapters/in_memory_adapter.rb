@@ -41,6 +41,7 @@ module EventStore
         @storage[aggregate.guid] = InMemory::EventProvider.new(aggregate)
       end
       
+      # Does not support transactions
       def transaction(&block)
         yield
       end

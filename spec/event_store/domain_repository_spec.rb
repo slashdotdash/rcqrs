@@ -17,6 +17,23 @@ module EventStore
         @storage.storage.has_key?(@aggregate.guid)
       end
     end
+
+    context "when saving an aggregate within a transaction" do
+      before(:each) do
+        @repository.transaction do
+          @repository.within_transaction?.should == true
+          @repository.save(@aggregate)
+        end
+      end
+
+      it "should persist the aggregate's applied events" do
+        @storage.storage.has_key?(@aggregate.guid)
+      end
+      
+      it "should not be within a transaction afterwards" do
+        @repository.within_transaction?.should == false
+      end
+    end    
     
     context "when finding an aggregate that does not exist" do
       it "should raise an EventStore::AggregateNotFound exception" do

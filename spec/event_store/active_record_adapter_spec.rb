@@ -56,6 +56,38 @@ module EventStore
           @adapter.find('').should == nil
         end
       end
+      
+      context "when saving aggregate within a transaction" do
+        before (:each) do
+          begin
+            @adapter.transaction do
+              @adapter.save(@aggregate)
+              event_provider_count.should == 1
+              event_count.should == 1
+            
+              raise 'rollback'
+            end
+          rescue
+            # expected rollback exception
+          end
+        end
+        
+        def event_provider_count
+          @adapter.provider_connection.select_value('select count(*) from event_providers').to_i
+        end
+
+        def event_count
+          @adapter.event_connection.select_value('select count(*) from events').to_i
+        end
+        
+        it "should rollback saved event provider" do
+          event_provider_count.should == 0
+        end
+        
+        it "should rollback saved events" do
+          event_count.should == 0
+        end
+      end
     end
   end
 end

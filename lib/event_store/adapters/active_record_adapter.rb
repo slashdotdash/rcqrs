@@ -36,7 +36,9 @@ module EventStore
       end
       
       def transaction(&block)
-        EventProvider.transaction { yield }
+        EventProvider.transaction do 
+          Event.transaction { yield }
+        end
       end
 
       def provider_connection
