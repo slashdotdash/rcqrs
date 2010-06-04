@@ -49,6 +49,10 @@ module EventStore
       @within_transaction
     end
     
+    def pending_events
+      @tracked_aggregates.map {|guid, tracked| tracked.pending_events }.flatten!
+    end
+    
   private
   
     # Track changes to this aggregate root so that any unsaved events
@@ -62,7 +66,7 @@ module EventStore
         next unless tracked.pending_events?
 
         @event_store.save(tracked)
-        tracked.sync_versions
+        tracked.commit
       end
     end
     

@@ -4,8 +4,6 @@ module Domain
     
     attr_reader :name
     attr_reader :invoices
-    
-    register_events Events::CompanyCreatedEvent, Events::InvoiceCreatedEvent
 
     def self.create(name)
       event = Events::CompanyCreatedEvent.new(:guid => Rcqrs::Guid.create, :name => name)

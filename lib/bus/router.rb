@@ -2,7 +2,7 @@ module Bus
   class MissingHandler < StandardError; end
   
   class Router
-    def handler_for(target, repository)
+    def handler_for(target, repository=nil)
       handler_class = (handlers[target.class] ||= handler_class_for(target))
       handler_class.new(repository)
     end

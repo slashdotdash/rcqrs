@@ -12,7 +12,9 @@ module Commands
     end
 
     def parse_date(date)
-      DateTime.strptime(date, '%d/%m/%Y') unless date.blank? || date.is_a?(DateTime)
+      return date if date.is_a?(DateTime)
+      return nil if date.blank?
+      DateTime.strptime(date, '%d/%m/%Y')
     end
 
     # Commands are never persisted

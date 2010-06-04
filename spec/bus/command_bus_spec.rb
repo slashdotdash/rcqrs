@@ -18,11 +18,6 @@ module Bus
         @bus.dispatch(Commands::CreateCompanyCommand.new('foo'))
         @router.handled.should == true
       end
-      
-      it "should fire domain events after executing handler" do
-        @bus.on(:domain_event) {|source, event| @router.handled.should == true }
-        @bus.dispatch(Commands::CreateCompanyCommand.new('foo'))
-      end      
-    end    
+    end
   end
 end
