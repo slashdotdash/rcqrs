@@ -52,6 +52,7 @@ module Domain
         @source_version = 0
         @applied_events = []
         @pending_events = []
+        @event_handlers = {}
       end
       
       def apply(event)
@@ -82,10 +83,16 @@ module Domain
       end
       
       def invoke_event_handler(event)
-        target = event.class.to_s.demodulize.underscore.sub(/_event$/, '')
-        target = "on_#{target}".to_sym
-
+        target = handler_for(event.class)
         self.send(target, event)
+      end
+      
+      # Map event type to method name: CompanyRegisteredEvent => on_company_registered(event)
+      def handler_for(event_type)
+        @event_handlers[event_type] ||= begin
+          target = event_type.to_s.demodulize.underscore.sub(/_event$/, '')
+          "on_#{target}".to_sym
+        end
       end
     end
   end
