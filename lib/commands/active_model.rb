@@ -12,9 +12,12 @@ module Commands
     end
 
     def parse_date(date)
-      return date if date.is_a?(DateTime)
+      return date.to_date if date.is_a?(Date) || date.is_a?(DateTime) || date.is_a?(ActiveSupport::TimeWithZone)
       return nil if date.blank?
-      DateTime.strptime(date, '%d/%m/%Y')
+      
+      return DateTime.strptime(date, '%d/%m/%Y').to_date
+    rescue
+      return date
     end
 
     # Commands are never persisted
