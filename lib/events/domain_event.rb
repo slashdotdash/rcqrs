@@ -3,6 +3,6 @@ module Events
     extend Rcqrs::Initializer
     include Rcqrs::Serialization
     
-    attr_accessor :aggregate_id, :version
+    attr_accessor :aggregate_id, :version, :timestamp
   end
 end

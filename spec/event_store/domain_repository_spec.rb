@@ -10,11 +10,17 @@ module EventStore
 
     context "when saving an aggregate" do
       before(:each) do
+        @domain_event_raised = false
+        @repository.on(:domain_event) {|source, event| @domain_event_raised = true }
         @repository.save(@aggregate)
       end
 
       it "should persist the aggregate's applied events" do
         @storage.storage.has_key?(@aggregate.guid)
+      end
+      
+      it "should raise domain event" do
+        @domain_event_raised.should == true
       end
     end
 

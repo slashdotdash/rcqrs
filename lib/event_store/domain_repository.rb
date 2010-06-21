@@ -4,6 +4,8 @@ module EventStore
   class UnknownAggregateClass < StandardError; end
     
   class DomainRepository
+    include Eventful
+    
     def initialize(event_store)
       @event_store = event_store
       @tracked_aggregates = {}
@@ -49,9 +51,10 @@ module EventStore
       @within_transaction
     end
     
-    def pending_events
-      @tracked_aggregates.map {|guid, tracked| tracked.pending_events }.flatten!
-    end
+    # Get unsaved events for all tracked aggregates, ordered by time applied
+    # def pending_events
+    #   @tracked_aggregates.map {|guid, tracked| tracked.pending_events }.flatten!.sort_by(&:timestamp)
+    # end
     
   private
   
@@ -62,12 +65,17 @@ module EventStore
     end
     
     def persist_aggregates_to_event_store
+      committed_events = []
+      
       @tracked_aggregates.each do |guid, tracked|
-        next unless tracked.pending_events?
+        next unless tracked.pending_events?        
 
         @event_store.save(tracked)
+        committed_events += tracked.pending_events
         tracked.commit
       end
+
+      committed_events.each {|event| fire(:domain_event, event) }
     end
     
     # Recreate an aggregate root by re-applying all saved +events+

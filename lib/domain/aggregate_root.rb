@@ -80,6 +80,7 @@ module Domain
       def update_event(event)
         event.aggregate_id = @guid
         event.version = @version
+        event.timestamp = Time.now.gmtime 
       end
       
       def invoke_event_handler(event)

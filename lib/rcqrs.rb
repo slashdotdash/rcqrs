@@ -2,6 +2,7 @@ require 'uuidtools'
 require 'active_support'
 require 'active_support/core_ext/object/returning'
 require 'yajl'
+require 'eventful'
 
 require 'support/guid'
 require 'support/serialization'
