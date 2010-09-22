@@ -10,6 +10,11 @@ Install all of the required gems for this application
 
 $ sudo bundle install
 
+== Testing
+
+Run the RSpec specifications 
+
+$ spec spec/
 
 == Basic Design Overview
 

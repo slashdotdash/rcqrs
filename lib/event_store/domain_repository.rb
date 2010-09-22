@@ -80,7 +80,7 @@ module EventStore
     
     # Recreate an aggregate root by re-applying all saved +events+
     def load_aggregate(klass, events)
-      returning create_aggregate(klass) do |aggregate|
+      create_aggregate(klass).tap do |aggregate|
         events.map! {|event| create_event(event) }
         aggregate.load(events)
         track(aggregate)
@@ -94,7 +94,7 @@ module EventStore
     
     # Create a new instance of the domain event from the serialized json
     def create_event(event)
-      returning event.event_type.constantize.from_json(event.data) do |domain_event|
+      event.event_type.constantize.from_json(event.data).tap do |domain_event|
         domain_event.version = event.version.to_i
         domain_event.aggregate_id = event.aggregate_id.to_s
       end

@@ -7,7 +7,7 @@ module Domain
     end
     
     def create_from_event(event)
-      returning self.new do |aggregate|
+      self.new.tap do |aggregate|
         aggregate.send(:apply, event)
       end
     end
