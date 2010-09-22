@@ -26,7 +26,7 @@ module EventStore
       end
     end
     
-    class InMemoryAdapter
+    class InMemoryAdapter < EventStore::DomainEventStorage
       attr_reader :storage
       
       def initialize(options={})
@@ -39,11 +39,6 @@ module EventStore
 
       def save(aggregate)
         @storage[aggregate.guid] = InMemory::EventProvider.new(aggregate)
-      end
-      
-      # Does not support transactions
-      def transaction(&block)
-        yield
       end
     end
   end
