@@ -18,7 +18,7 @@ module EventStore
       scope :for, lambda { |guid| where(:aggregate_id => guid).order(:version) }
     end
 
-    class ActiveRecordAdapter
+    class ActiveRecordAdapter < EventStore::DomainEventStorage
       def initialize(options={})
         options.reverse_merge!(:adapter => 'sqlite3', :database => 'events.db')
         establish_connection(options)
