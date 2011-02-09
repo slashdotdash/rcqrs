@@ -43,6 +43,9 @@ module EventStore
         yield
         persist_aggregates_to_event_store
       end
+    rescue
+      @tracked_aggregates.clear # abandon changes on exception
+      raise
     ensure
       @within_transaction = false
     end
@@ -50,12 +53,7 @@ module EventStore
     def within_transaction?
       @within_transaction
     end
-    
-    # Get unsaved events for all tracked aggregates, ordered by time applied
-    # def pending_events
-    #   @tracked_aggregates.map {|guid, tracked| tracked.pending_events }.flatten!.sort_by(&:timestamp)
-    # end
-    
+
   private
   
     # Track changes to this aggregate root so that any unsaved events
@@ -75,8 +73,13 @@ module EventStore
         tracked.commit
       end
 
-      committed_events.each {|event| fire(:domain_event, event) }
+      committed_events.sort_by(&:timestamp).each {|event| fire(:domain_event, event) }
     end
+    
+    # Get unsaved events for all tracked aggregates, ordered by time applied
+    # def pending_events
+    #   @tracked_aggregates.map {|guid, tracked| tracked.pending_events }.flatten!.sort_by(&:timestamp)
+    # end
     
     # Recreate an aggregate root by re-applying all saved +events+
     def load_aggregate(klass, events)
