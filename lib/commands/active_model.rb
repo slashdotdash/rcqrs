@@ -6,7 +6,7 @@ module Commands
         include ::ActiveModel::AttributeMethods
         include ::ActiveModel::Validations
         
-        extend ::Rcqrs::Initializer        
+        extend ::Rcqrs::Initializer
         include Commands::ActiveModel
       end
     end

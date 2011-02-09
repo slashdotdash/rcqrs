@@ -4,9 +4,9 @@ module Rcqrs
   class Car
     extend Initializer
     
-    attr_reader :manufacturer, :make, :bhp, :ps
+    attr_reader :manufacturer, :model, :bhp, :ps
 
-    initializer :manufacturer, :make, :bhp do
+    initializer :manufacturer, :model, :bhp do
       @ps = bhp.to_f / 2
     end
   end
@@ -27,7 +27,7 @@ module Rcqrs
       end
       
       it "should set the manufacturer" do
-        @car.make.should == 'Focus'
+        @car.model.should == 'Focus'
       end
       
       it "should set the bhp and ps from power" do
@@ -38,7 +38,7 @@ module Rcqrs
     
     context "when creating with named arguments" do
       before(:each) do
-        @car = Car.new(:make => 'Focus', :manufacturer => 'Ford')
+        @car = Car.new(:model => 'Focus', :manufacturer => 'Ford')
       end
     
       it "should set the manufacturer" do
@@ -46,13 +46,13 @@ module Rcqrs
       end
       
       it "should set the manufacturer" do
-        @car.make.should == 'Focus'
+        @car.model.should == 'Focus'
       end      
     end
     
     context "when creating with arguments hash" do
       before(:each) do
-        arguments = { :manufacturer => 'Ford', :make => 'Focus' }
+        arguments = { :manufacturer => 'Ford', :model => 'Focus' }
         @car = Car.new(arguments)
       end
     
@@ -61,39 +61,50 @@ module Rcqrs
       end
       
       it "should set the manufacturer" do
-        @car.make.should == 'Focus'
+        @car.model.should == 'Focus'
       end
     end
-  end
   
-  context "when creating with invalid parameter" do
-    it "should raise an exception" do
-      proc { Car.new(:invalid => 'x') }.should raise_error(ArgumentError)
+    context "when creating with invalid parameter" do
+      it "should raise an exception" do
+        proc { Car.new(:invalid => 'x') }.should raise_error(ArgumentError)
+      end
     end
-  end
   
-  context "when getting the attributes" do
-    before(:each) do
-      @car = Car.new(:manufacturer => 'Ford', :make => 'Focus', :bhp => 115)
+    context "when getting the attributes" do
+      before(:each) do
+        @car = Car.new(:manufacturer => 'Ford', :model => 'Focus', :bhp => 115)
+      end
+    
+      it "should return hash of all attributes" do
+        @car.attributes.should == { :manufacturer => 'Ford', :model => 'Focus', :bhp => 115 }
+      end
+    
+      it "should allow creation of new object from existing object's attributes" do
+        cloned = Car.new(@car.attributes)
+        cloned.manufacturer.should == 'Ford'
+      end
+    end
+  
+    context "when defining attrs automatically" do
+      before (:each) do
+        @bike = Bike.new('Planet X')
+      end
+    
+      it "should have attr_reader defined" do
+        @bike.manufacturer.should == 'Planet X'
+      end
     end
     
-    it "should return hash of all attributes" do
-      @car.attributes.should == { :manufacturer => 'Ford', :make => 'Focus', :bhp => 115 }
-    end
-    
-    it "should allow creation of new object from existing object's attributes" do
-      cloned = Car.new(@car.attributes)
-      cloned.manufacturer.should == 'Ford'
-    end
-  end
-  
-  context "when defining attrs automatically" do
-    before (:each) do
-      @bike = Bike.new('Planet X')
-    end
-    
-    it "should have attr_reader defined" do
-      @bike.manufacturer.should == 'Planet X'
+    context "when initializing from another initialized object with attributes" do
+      before (:each) do
+        @bike = Bike.new('Planet X')
+        @car = Car.new(@bike)
+      end
+      
+      it "should set manufacturer" do
+        @car.manufacturer.should == @bike.manufacturer
+      end
     end
   end
 end

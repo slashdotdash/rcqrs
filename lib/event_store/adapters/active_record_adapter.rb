@@ -104,6 +104,7 @@ module EventStore
       def ensure_events_table_exists
         return if Event.table_exists?
         
+        # no primary key as we do not update or delete from this table
         event_connection.create_table(:events, :id => false) do |t|
           t.string :aggregate_id, :limit => 36, :null => false
           t.string :event_type, :null => false
