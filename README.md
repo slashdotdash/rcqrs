@@ -18,13 +18,13 @@ Install all of the required gems for this application
 
 Run the RSpec specifications as follows.
 
-    $ spec spec/
+    $ rspec spec/
 
 ## Basic Design Overview
 
 ###UI
 
-- display query results
+- display query results using read-only reporting datastore
 - create commands - must be 'task focused'
 - basic validation of command (e.g. required fields, uniqueness using queries against the reporting data store)
 
@@ -33,12 +33,12 @@ such as `RegisterCompanyCommand`
 
 - capture users’ intent
 - named in the imperative (e.g. create account, upgrade customer, complete checkout)
-- can fail / declined
+- can fail or be declined
 
 ###Command Bus
 
 - validates command
-- routes command to registered handler
+- routes command to registered handler (there can be only one handler per command)
 
 ###Command Handler 
 such as `RegisterCompanyHandler`
@@ -60,12 +60,12 @@ such as `CompanyRegisteredEvent`
 - inform something that has already happened
 - must be in the past tense and cannot fail
 - used to update internal state of the corresponding aggregate root
-  
+
 ###Event Bus
 
-- suscribes to domain events
+- subscribes to domain events
 - persist domain events to event store
-- routes events to registered handler(s)
+- routes events to registered handler(s) (can have more than one handler per event)
 
 ###Event Handler
 such as `CompanyRegisteredHandler`
