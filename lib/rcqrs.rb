@@ -17,7 +17,7 @@ require 'bus/router'
 require 'bus/command_bus'
 require 'bus/event_bus'
 
-require 'commands/base_command'
+require 'commands/invalid_command'
 require 'commands/active_model'
 require 'commands/handlers/base_handler'
 

@@ -1,5 +1,7 @@
 module Commands
-  class CreateCompanyCommand < BaseCommand
+  class CreateCompanyCommand
+    extend ActiveModel
+    
     attr_reader :name
     validates_presence_of :name
     
