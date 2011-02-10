@@ -2,11 +2,11 @@ require File.join(File.dirname(__FILE__), '../spec_helper')
 
 module Bus  
   describe EventBus do
-    context "when dispatching events" do
+    context "when publishing events" do
       before(:each) do
         @router = MockRouter.new
         @bus = EventBus.new(@router)
-        @bus.dispatch(Events::CompanyCreatedEvent.new)
+        @bus.publish(Events::CompanyCreatedEvent.new)
       end
 
       it "should execute handler for raised event" do

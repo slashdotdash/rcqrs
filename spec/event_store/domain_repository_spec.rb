@@ -56,7 +56,7 @@ module EventStore
       subject { @retrieved }
       it { should be_instance_of(Domain::Company) }
       specify { @retrieved.version.should == 1 }
-      specify { @retrieved.applied_events.length.should == 1 }
+      specify { @retrieved.pending_events.length.should == 0 }
     end
     
     context "when reloading same aggregate" do

@@ -4,8 +4,8 @@ module Bus
       @router = router
     end
 
-    # Dispatch event to registered handler
-    def dispatch(event)
+    # Publish event to registered handlers
+    def publish(event)
       handler = @router.handler_for(event, nil)
       handler.execute(event)
     end

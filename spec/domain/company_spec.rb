@@ -14,8 +14,8 @@ module Domain
       end
 
       it "should have a Events::CompanyCreatedEvent event" do
-        @company.applied_events.length.should == 1
-        @company.applied_events.last.should be_an_instance_of(Events::CompanyCreatedEvent)
+        @company.pending_events.length.should == 1
+        @company.pending_events.last.should be_an_instance_of(Events::CompanyCreatedEvent)
       end
       
       specify { @company.pending_events?.should == true }
@@ -53,8 +53,8 @@ module Domain
         end
         
         it "should have a Events::InvoiceCreatedEvent event" do
-          @company.applied_events.length.should == 2
-          @company.applied_events.last.should be_an_instance_of(Events::InvoiceCreatedEvent)
+          @company.pending_events.length.should == 2
+          @company.pending_events.last.should be_an_instance_of(Events::InvoiceCreatedEvent)
         end
       end
     end
@@ -76,13 +76,8 @@ module Domain
       specify { @company.version.should == 3 }
       specify { @company.source_version.should == 3 }
       specify { @company.pending_events.length.should == 0 }
-      specify { @company.applied_events.length.should == 3 }      
       specify { @company.replaying?.should == false }
       
-      it "should have 3 applied events" do
-        @company.applied_events.length.should == 3
-      end
-
       it "should have created 2 invoices" do
         @company.invoices.length.should == 2
       end

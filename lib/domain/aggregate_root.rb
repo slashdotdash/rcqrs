@@ -13,7 +13,7 @@ module Domain
     end
 
     module InstanceMethods
-      attr_reader :guid, :applied_events, :version, :source_version
+      attr_reader :guid, :version, :source_version
 
       # Replay the given events, ordered by version
       def load(events)
@@ -50,7 +50,6 @@ module Domain
       def initialize
         @version = 0
         @source_version = 0
-        @applied_events = []
         @pending_events = []
         @event_handlers = {}
       end
@@ -72,9 +71,7 @@ module Domain
 
       def apply_event(event)
         invoke_event_handler(event)
-        
         @version += 1
-        @applied_events << event
       end
 
       def update_event(event)

@@ -10,7 +10,7 @@ module EventStore
           @aggregate_id = aggregate.guid
           @aggregate_type = aggregate.class.name
           @version = aggregate.version
-          @events = aggregate.applied_events.map {|e| Event.new(e) }
+          @events = aggregate.pending_events.map {|e| Event.new(e) }
         end
       end
     
