@@ -9,7 +9,7 @@ module Bus
         @bus.publish(Events::CompanyCreatedEvent.new)
       end
 
-      it "should execute handler for raised event" do
+      it "should execute handler(s) for raised event" do
         @router.handled.should == true
       end
     end

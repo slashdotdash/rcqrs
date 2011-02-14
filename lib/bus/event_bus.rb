@@ -6,8 +6,9 @@ module Bus
 
     # Publish event to registered handlers
     def publish(event)
-      handler = @router.handler_for(event, nil)
-      handler.execute(event)
+      @router.handlers_for(event).each do |handler|
+        handler.execute(event)
+      end
     end
   end
 end

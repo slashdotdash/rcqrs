@@ -1,13 +1,9 @@
 module Events
   module Handlers
     class BaseHandler
-      def initialize(repository)
-        @repository = repository
+      def execute(event)
+        raise NotImplementedError, 'method to be implemented in handler'
       end
-    end
-    
-    def execute(event)
-      raise 'method to be implemented in handler'
     end
   end
 end

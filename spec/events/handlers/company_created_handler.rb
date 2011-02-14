@@ -2,9 +2,9 @@ module Events
   module Handlers
     class CompanyCreatedHandler < BaseHandler
       def execute(event)
-        company = ::Reporting::Company.new(event.guid, event.name)
-        @repository.save(company)
-        # Company.create!(:guid => event.guid, :name => event.name)
+        ::Reporting::Company.new(event.guid, event.name)
+        
+        # ... persist to reporting data store
       end
     end
   end

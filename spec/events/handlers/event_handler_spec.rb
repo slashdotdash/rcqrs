@@ -4,15 +4,13 @@ module Events
   module Handlers
     describe CompanyCreatedHandler do
       before(:each) do
-        @repository = mock
-        @handler = CompanyCreatedHandler.new(@repository)
+        @handler = CompanyCreatedHandler.new
       end
       
       context "when executing" do
         before(:each) do
-          @repository.should_receive(:save) {|company| @company = company }
           @event = Events::CompanyCreatedEvent.new(:guid => Rcqrs::Guid.create, :name => 'ACME corp')
-          @handler.execute(@event)
+          @company = @handler.execute(@event)
         end
         
         specify { @company.should be_instance_of(Reporting::Company) }
