@@ -10,3 +10,6 @@ group :spec do
   gem "rspec", ">= 2.5.0"
   gem "sqlite3-ruby", "~> 1.3.1", :require => "sqlite3"
 end
+
+gem "resque"
+gem "SystemTimer"

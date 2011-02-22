@@ -3,6 +3,7 @@ require File.join(File.dirname(__FILE__), 'spec_helper')
 module Rcqrs
   class Car
     extend Initializer
+    include Serialization
     
     attr_reader :manufacturer, :model, :bhp, :ps
 
@@ -16,7 +17,7 @@ module Rcqrs
     initializer :manufacturer, :attr_reader => true 
   end
 
-  describe Car do
+  describe Initializer do
     context "when creating with positional arguments" do
       before(:each) do
         @car = Car.new('Ford', 'Focus', 115)
@@ -79,7 +80,7 @@ module Rcqrs
       it "should return hash of all attributes" do
         @car.attributes.should == { :manufacturer => 'Ford', :model => 'Focus', :bhp => 115 }
       end
-    
+
       it "should allow creation of new object from existing object's attributes" do
         cloned = Car.new(@car.attributes)
         cloned.manufacturer.should == 'Ford'
@@ -87,7 +88,7 @@ module Rcqrs
     end
   
     context "when defining attrs automatically" do
-      before (:each) do
+      before(:each) do
         @bike = Bike.new('Planet X')
       end
     
@@ -104,6 +105,24 @@ module Rcqrs
       
       it "should set manufacturer" do
         @car.manufacturer.should == @bike.manufacturer
+      end
+    end
+    
+    context "when serializing to JSON" do
+      before(:each) do
+        @car = Car.new(:model => 'Focus', :manufacturer => 'Ford')
+        @json = @car.to_json
+        @decoded = Yajl::Parser.parse(@json)
+      end
+      
+      it "should serialize all instance variables" do
+        @decoded.keys.sort.should == %w(manufacturer model ps)
+      end
+      
+      it "should serialize all values" do
+        @decoded['manufacturer'].should == @car.manufacturer
+        @decoded['model'].should == @car.model
+        @decoded['ps'].should == @car.ps
       end
     end
   end

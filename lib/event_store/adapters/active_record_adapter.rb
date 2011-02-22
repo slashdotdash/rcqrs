@@ -73,7 +73,7 @@ module EventStore
             :aggregate_id => event.aggregate_id,
             :event_type => event.class.name,
             :version => event.version,
-            :data => event.attributes_to_json)
+            :data => event.to_json)
         end
       end
       

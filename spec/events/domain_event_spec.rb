@@ -5,18 +5,20 @@ module Events
     context "serialization" do
       before(:each) do
         @event = CompanyCreatedEvent.new(Rcqrs::Guid.create, 'ACME Corp')
+        @event.aggregate_id = Rcqrs::Guid.create
+        @json = @event.to_json
       end
     
-      it "should serialize to json" do
-        json = @event.to_json
-        json.length.should be > 0
+      it "should serialize to JSON" do
+        @json.length.should be > 0
       end
       
       it "should deserialize from json" do
-        deserialized = CompanyCreatedEvent.from_json(@event.to_json)
+        parsed = CompanyCreatedEvent.from_json(@json)
         
-        deserialized.name.should == @event.name
-        deserialized.guid.should == @event.guid
+        parsed.name.should == @event.name
+        parsed.guid.should == @event.guid
+        parsed.aggregate_id.should == @event.aggregate_id
       end
     end
   end

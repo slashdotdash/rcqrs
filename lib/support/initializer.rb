@@ -51,10 +51,6 @@ module Rcqrs
           attrs.merge!(attribute.to_sym => instance_variable_get("@#{attribute}"))
         end
       end
-      
-      define_method :attributes_to_json do
-        to_json(attributes)
-      end
     end
         
     def extract_last_arg_as_options!(args)

@@ -1,11 +1,10 @@
+require 'yajl'
+require 'yajl/json_gem'
+
 module Rcqrs
   module Serialization
     def self.included(base)
       base.extend ClassMethods
-    end
-    
-    def to_json(attributes=self.attributes)
-      Yajl::Encoder.encode(attributes)
     end
 
     module ClassMethods

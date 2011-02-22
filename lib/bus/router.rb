@@ -7,7 +7,7 @@ module Bus
       handler_name = "#{target.class.name.gsub(/Event$|Command$/, '')}Handler"
       handler_name.gsub!(/::/, '::Handlers::') if handler_name =~ /::/
       handler_name.constantize
-    rescue NameError => ex  
+    rescue NameError => ex
       raise MissingHandler.new("No handler found for #{target.class.name} (expected #{handler_name})")
     end
 
