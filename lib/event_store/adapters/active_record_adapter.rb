@@ -36,8 +36,8 @@ module EventStore
       end
       
       def transaction(&block)
-        EventProvider.transaction do 
-          Event.transaction { yield }
+        ActiveRecord::Base.transaction do
+          yield
         end
       end
 
