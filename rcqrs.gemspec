@@ -26,7 +26,7 @@ Gem::Specification.new do |s|
      "lib/bus/event_bus.rb",
      "lib/bus/router.rb",
      "lib/commands/active_model.rb",
-     "lib/commands/base_command.rb",
+     "lib/commands/invalid_command.rb",
      "lib/commands/handlers/base_handler.rb",
      "lib/domain/aggregate_root.rb",
      "lib/event_store/adapters/active_record_adapter.rb",
