@@ -1,8 +1,8 @@
 # Ruby CQRS with Event Sourcing
 
-A Ruby implementation of Command-Query Responsibility Segregation (CQRS) with Event Sourcing, based upon the ideas of [Greg Young](http://codebetter.com/blogs/gregyoung/).
+A Ruby implementation of Command-Query Responsibility Segregation (CQRS) with Event Sourcing, based upon the ideas of [Greg Young](http://goodenoughsoftware.net/).
 
-[Find out more about CQRS](http://cqrsinfo.com/).
+[Find out more about CQRS](http://cqrs.wordpress.com/).
 
 ## Getting Started
 
