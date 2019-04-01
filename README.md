@@ -8,11 +8,11 @@ A Ruby implementation of Command-Query Responsibility Segregation (CQRS) with Ev
 
 Dependencies are managed using [Bundler](http://gembundler.com/).
 
-    $ sudo gem install bundler
+    $ gem install bundler
 
 Install all of the required gems for this application
 
-    $ sudo bundle install
+    $ bundle install
 
 ## Specs
 
@@ -40,12 +40,12 @@ such as `RegisterCompanyCommand`
 - validates command
 - routes command to registered handler (there can be only one handler per command)
 
-###Command Handler 
+###Command Handler
 such as `RegisterCompanyHandler`
 
 - loads corresponding aggregate root (using domain repository)
 - executes action on aggregate root
-  
+
 ###Aggregate Roots
 such as `Company`
 
