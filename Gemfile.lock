@@ -13,10 +13,12 @@ GEM
     activesupport (3.0.4)
     arel (2.0.8)
     builder (2.1.2)
+    concurrent-ruby (1.1.5)
     diff-lcs (1.1.2)
     eventful (1.0.0)
       methodphitamine
-    i18n (0.5.0)
+    i18n (0.9.5)
+      concurrent-ruby (~> 1.0)
     methodphitamine (1.0.0)
     rspec (2.5.0)
       rspec-core (~> 2.5.0)
